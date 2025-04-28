@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import sys
+import time # Added import
 from typing import List, Optional
 from datetime import datetime
 
@@ -65,7 +66,7 @@ def get_user_id_by_username(username: str, bearer_token: str) -> Optional[str]:
 
 
 def get_user_tweets(user_id: str, bearer_token: str, limit: Optional[int] = None, max_results_per_page: int = 100) -> List[Tweet]:
-    """Fetches tweets for a given user ID, handling pagination and optional limit."""
+    """Fetches tweets for a given user ID, handling pagination, rate limits, and optional limit."""
     print(f"Fetching tweets for user ID {user_id}...")
     all_tweets: List[Tweet] = []
     next_token: Optional[str] = None
@@ -123,7 +124,32 @@ def get_user_tweets(user_id: str, bearer_token: str, limit: Optional[int] = None
             if e.response is not None:
                 print(f"Response status: {e.response.status_code}", file=sys.stderr)
                 print(f"Response body: {e.response.text}", file=sys.stderr)
-            # Decide whether to break or retry - for now, break
+
+                # --- Rate Limit Handling (429) ---
+                if e.response.status_code == 429:
+                    retry_after_header = e.response.headers.get("Retry-After")
+                    wait_time = 60 # Default wait time in seconds
+                    if retry_after_header and retry_after_header.isdigit():
+                        wait_time = int(retry_after_header)
+                        print(f"Rate limit hit. Waiting for {wait_time} seconds (from Retry-After header)...", file=sys.stderr)
+                    else:
+                        # Check for x-rate-limit-reset header (Unix timestamp)
+                        reset_time_header = e.response.headers.get("x-rate-limit-reset")
+                        if reset_time_header and reset_time_header.isdigit():
+                            reset_timestamp = int(reset_time_header)
+                            current_timestamp = int(time.time())
+                            wait_time = max(0, reset_timestamp - current_timestamp) + 1 # Add 1 sec buffer
+                            print(f"Rate limit hit. Waiting until reset time: {datetime.fromtimestamp(reset_timestamp)} ({wait_time} seconds)...", file=sys.stderr)
+                        else:
+                            print(f"Rate limit hit. No specific wait time found in headers. Waiting for default {wait_time} seconds...", file=sys.stderr)
+
+                    time.sleep(wait_time)
+                    print("Retrying request...")
+                    continue # Retry the same request
+                # --- End Rate Limit Handling ---
+
+            # For other request errors, break the loop for now
+            print("Aborting due to non-rate-limit request error.", file=sys.stderr)
             break
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON response: {e}", file=sys.stderr)

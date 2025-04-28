@@ -2,4 +2,121 @@
   {
     "id": "1916070344625885670",
     "text": "https://t.co/btF9iEFbAe\nA previous version: No react, no typescript, the logic is in the sidebar (slower architecture, simple enough for Gemini)",
-    "created_at": 
+    "created_at": "2025-04-26T10:02:23Z",
+    "public_metrics": {
+      "retweet_count": 0,
+      "reply_count": 0,
+      "like_count": 2,
+      "quote_count": 0,
+      "impression_count": 30
+    }
+  },
+  {
+    "id": "1916070342713380868",
+    "text": "https://t.co/HYvpjFwMSg",
+    "created_at": "2025-04-26T10:02:23Z",
+    "public_metrics": {
+      "retweet_count": 0,
+      "reply_count": 1,
+      "like_count": 1,
+      "quote_count": 0,
+      "impression_count": 27
+    }
+  },
+  {
+    "id": "1916070340964270440",
+    "text": "I think this would be better as an Obsidian/vscode plugin, local and fast.",
+    "created_at": "2025-04-26T10:02:22Z",
+    "public_metrics": {
+      "retweet_count": 0,
+      "reply_count": 1,
+      "like_count": 1,
+      "quote_count": 0,
+      "impression_count": 15
+    }
+  },
+  {
+    "id": "1916070339148185785",
+    "text": "2. The architecture (sidebar&lt;-&gt;AppsScript&lt;-&gt;doc) was laggy, and keeping a single source of truth (which I put in the AppsScript server for performance reasons I now regret) was too complicated for Gemini",
+    "created_at": "2025-04-26T10:02:22Z",
+    "public_metrics": {
+      "retweet_count": 0,
+      "reply_count": 1,
+      "like_count": 1,
+      "quote_count": 0,
+      "impression_count": 19
+    }
+  },
+  {
+    "id": "1916070337294323794",
+    "text": "Challenges here:\n1. No Google Docs API for \"leave comments on this text\" --&gt; Maybe I can ignore the built in comments and make my own comments in a sidebar? Gemini did that easily. \n*Except for the \"focus on this comment\" logic",
+    "created_at": "2025-04-26T10:02:21Z",
+    "public_metrics": {
+      "retweet_count": 0,
+      "reply_count": 1,
+      "like_count": 1,
+      "quote_count": 0,
+      "impression_count": 21
+    }
+  },
+  {
+    "id": "1916070334622466356",
+    "text": "Vibe coded* a Google Docs plugin that uses an LLM to makes comments every time the doc changes. https://t.co/6oeatbtyZw",
+    "created_at": "2025-04-26T10:02:21Z",
+    "public_metrics": {
+      "retweet_count": 2,
+      "reply_count": 2,
+      "like_count": 9,
+      "quote_count": 0,
+      "impression_count": 154
+    }
+  },
+  {
+    "id": "1915802264939155919",
+    "text": "@edanm Thanks! Not my idea, a friend wanted it\n\nI used Cursor with Gemini-2.5-pro-exp-03-25, and I used this template for extensions:\nhttps://t.co/6XqPUoEAEu",
+    "created_at": "2025-04-25T16:17:08Z",
+    "public_metrics": {
+      "retweet_count": 0,
+      "reply_count": 0,
+      "like_count": 2,
+      "quote_count": 0,
+      "impression_count": 23
+    }
+  },
+  {
+    "id": "1915779318774481202",
+    "text": "https://t.co/NMdiS2UQhp",
+    "created_at": "2025-04-25T14:45:57Z",
+    "public_metrics": {
+      "retweet_count": 0,
+      "reply_count": 0,
+      "like_count": 1,
+      "quote_count": 0,
+      "impression_count": 9
+    }
+  },
+  {
+    "id": "1915779316572447098",
+    "text": "Vibe coded a Mastodon bot that uses an LLM to reply to messages. Currently it's pretending to be a psychologist: https://t.co/OpXRKy9869",
+    "created_at": "2025-04-25T14:45:57Z",
+    "public_metrics": {
+      "retweet_count": 0,
+      "reply_count": 1,
+      "like_count": 2,
+      "quote_count": 0,
+      "impression_count": 35
+    }
+  },
+  {
+    "id": "1915767077903704229",
+    "text": "It's a browser extension, should work on Firefox/Chrome/Edge/Opera",
+    "created_at": "2025-04-25T13:57:19Z",
+    "public_metrics": {
+      "retweet_count": 0,
+      "reply_count": 1,
+      "like_count": 2,
+      "quote_count": 0,
+      "impression_count": 41
+    }
+  }
+]
