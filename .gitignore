@@ -1,10 +1,22 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+# Environment variables
+.env
 
-# Virtual environments
-.venv
+# Python cache
+__pycache__/
+*.pyc
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Virtual environment
+.venv/
+
+# Cache files
+.cache/
+twitter_cache.sqlite
+
+# IDE / Editor specific
+.vscode/
+.idea/
