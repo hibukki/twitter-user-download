@@ -16,3 +16,6 @@ build/
 # Cache files
 .cache/
 twitter_cache.sqlite
+
+# Downloaded tweets
+*_tweets.json
