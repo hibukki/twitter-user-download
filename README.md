@@ -4,35 +4,23 @@ Downloads all tweets for a given Twitter user and saves them to a JSON file. Use
 
 ## Installation (macOS)
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository_url>
-    cd twitter_user_download
-    ```
-2.  **Install uv (if you don't have it):**
-    ```bash
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    source $HOME/.cargo/env
-    ```
-3.  **Install dependencies:**
-    ```bash
-    uv sync
-    ```
+### Install uv
 
-## Configuration
+[https://github.com/astral-sh/uv?tab=readme-ov-file#installation](https://github.com/astral-sh/uv?tab=readme-ov-file#installation)
 
-This tool requires a Twitter API v2 Bearer Token.
+### Get Twitter developer api key
 
-1.  Obtain a Bearer Token from the Twitter Developer Portal.
-2.  Set it as an environment variable:
-    ```bash
-    export TWITTER_BEARER_TOKEN="YOUR_BEARER_TOKEN_HERE"
-    ```
-    Alternatively, you can add this line to your shell profile (e.g., `~/.zshrc` or `~/.bash_profile`) for persistence.
+Sign up as a developer here:
 
-## Usage
+https://developer.twitter.com/en/portal/petition/essential/basic-info
 
-Run the script with the target Twitter username:
+You want a Bearer Token, put it in `.env`
+
+```.env
+TWITTER_API_KEY=my_bearer_token
+```
+
+## Run
 
 ```bash
 uv run python src/twitter_downloader/main.py <username>
@@ -44,4 +32,10 @@ Example:
 uv run python src/twitter_downloader/main.py YonatanCale
 ```
 
-This will create a file named `<username>_tweets.json` (e.g., `YonatanCale_tweets.json`) in the current directory containing the downloaded tweets. API responses are cached in `twitter_cache.sqlite` for 1 hour.
+You can also limit the amount of tweets with `--limit` (for debug, don't overwhelm the Twitter API)
+
+Example:
+
+```bash
+uv run python src/twitter_downloader/main.py YonatanCale --limit 10
+```
