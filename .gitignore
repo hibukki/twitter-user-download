@@ -16,7 +16,3 @@ build/
 # Cache files
 .cache/
 twitter_cache.sqlite
-
-# IDE / Editor specific
-.vscode/
-.idea/
