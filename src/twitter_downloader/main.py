@@ -3,6 +3,7 @@ import json
 import os
 import sys
 from typing import List, Optional
+from datetime import datetime
 
 import requests
 import requests_cache
@@ -11,10 +12,18 @@ from pydantic import BaseModel, Field, ValidationError
 
 
 # TODO: Define Pydantic models for User and Tweet
+class PublicMetrics(BaseModel):
+    retweet_count: int
+    reply_count: int
+    like_count: int
+    quote_count: int
+    impression_count: int
+
 class Tweet(BaseModel):
     id: str
     text: str
-    created_at: str # Or use datetime? Consider timezone
+    created_at: datetime # Use datetime object
+    public_metrics: Optional[PublicMetrics] = None # Add public metrics
 
 
 class User(BaseModel):
@@ -56,25 +65,73 @@ def get_user_id_by_username(username: str, bearer_token: str) -> Optional[str]:
 
 
 def get_user_tweets(user_id: str, bearer_token: str, limit: Optional[int] = None, max_results_per_page: int = 100) -> List[Tweet]:
+    """Fetches tweets for a given user ID, handling pagination and optional limit."""
     print(f"Fetching tweets for user ID {user_id}...")
-    # Placeholder - Replace with actual Twitter API v2 call
-    # Endpoint: /2/users/:id/tweets
-    # Handle pagination using next_token
-    # Requires Bearer Token authentication
-    # Consider the 'limit' parameter
-    # Parse response into Tweet objects
-    dummy_tweets = [
-        Tweet(id="1", text="Hello world!", created_at="2023-01-01T12:00:00Z"),
-        Tweet(id="2", text="Another tweet", created_at="2023-01-02T12:00:00Z"),
-        Tweet(id="3", text="Third tweet!", created_at="2023-01-03T12:00:00Z"),
-        # Add more dummy tweets if needed for testing limit
-    ]
-    if limit is not None:
-        print(f"Applying limit: Fetching max {limit} tweets.")
-        return dummy_tweets[:limit]
+    all_tweets: List[Tweet] = []
+    next_token: Optional[str] = None
+    url = f"{TWITTER_API_BASE_URL}/users/{user_id}/tweets"
+    headers = {"Authorization": f"Bearer {bearer_token}"}
+
+    # Determine the maximum number of results per page based on the limit
+    # Twitter API v2 allows max 100 per page for user tweets endpoint
+    if limit is not None and limit < max_results_per_page:
+        results_per_page = limit
     else:
-        print(f"No limit specified, fetching up to {max_results_per_page} tweets (implement pagination later).")
-        return dummy_tweets[:max_results_per_page] # Replace with actual API call result
+        results_per_page = max_results_per_page
+
+    while True:
+        params = {
+            "max_results": results_per_page,
+            # Request specific fields
+            "tweet.fields": "created_at,public_metrics"
+        }
+        if next_token:
+            params["pagination_token"] = next_token
+
+        print(f"Fetching page... (max_results={results_per_page}, next_token={next_token})")
+
+        try:
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+            data = response.json()
+
+            if "data" in data:
+                for tweet_data in data["data"]:
+                    try:
+                        tweet = Tweet(**tweet_data)
+                        all_tweets.append(tweet)
+                        if limit is not None and len(all_tweets) >= limit:
+                            print(f"Reached limit of {limit} tweets.")
+                            return all_tweets # Limit reached
+                    except ValidationError as e:
+                        print(f"Skipping tweet due to validation error: {e}", file=sys.stderr)
+                        print(f"Problematic tweet data: {tweet_data}", file=sys.stderr)
+
+            if "meta" in data and "next_token" in data["meta"]:
+                next_token = data["meta"]["next_token"]
+                # Adjust results per page for the next request if near the limit
+                if limit is not None:
+                    remaining_limit = limit - len(all_tweets)
+                    if remaining_limit < results_per_page:
+                        results_per_page = remaining_limit
+            else:
+                print("No more pages found.")
+                break # No more pages
+
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching page of tweets: {e}", file=sys.stderr)
+            if e.response is not None:
+                print(f"Response status: {e.response.status_code}", file=sys.stderr)
+                print(f"Response body: {e.response.text}", file=sys.stderr)
+            # Decide whether to break or retry - for now, break
+            break
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON response: {e}", file=sys.stderr)
+            print(f"Response text: {response.text}", file=sys.stderr)
+            break
+
+    print(f"Finished fetching. Total tweets gathered: {len(all_tweets)}")
+    return all_tweets
 
 
 def save_tweets_to_json(tweets: List[Tweet], username: str):
