@@ -137,8 +137,8 @@ def get_user_tweets(user_id: str, bearer_token: str, limit: Optional[int] = None
 def save_tweets_to_json(tweets: List[Tweet], username: str):
     filename = f"{username}_tweets.json"
     print(f"Saving {len(tweets)} tweets to {filename}...")
-    # Convert Pydantic models to dicts for JSON serialization
-    tweets_data = [tweet.model_dump() for tweet in tweets]
+    # Use model_dump(mode='json') for proper serialization, including datetimes
+    tweets_data = [tweet.model_dump(mode='json') for tweet in tweets]
     try:
         with open(filename, "w") as f:
             json.dump(tweets_data, f, indent=2)
